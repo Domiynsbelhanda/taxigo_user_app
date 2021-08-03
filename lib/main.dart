@@ -20,7 +20,6 @@ Future<void> main() async {
 
   await Firebase.initializeApp();
 
-  HelperMethods.getCurrentUserInfo();
   currentFirebaseUser = await FirebaseAuth.instance.currentUser;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -56,7 +55,6 @@ class _MyApp extends State<MyApp> {
     /// We would then call: applic.onLocaleChanged(new Locale('en',''));
     /// 
     applic.onLocaleChanged = onLocaleChange;
-    applic.onLocaleChanged(new Locale(langue,''));
   }
 
   onLocaleChange(Locale locale){

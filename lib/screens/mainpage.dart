@@ -1,4 +1,6 @@
+import 'package:taxigo_user_app/datamodels/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_select/smart_select.dart';
 import 'package:taxigo_user_app/brand_colors.dart';
@@ -82,12 +84,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   bool isRequestingLocationDetails = false;
 
+  CameraPosition cpm;
+
   void setupPositionLocator() async {
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     currentPosition = position;
 
     LatLng pos = LatLng(currentPosition.latitude, currentPosition.longitude);
     CameraPosition cp = new CameraPosition(target: pos, zoom: 14);
+    cpm = cp;
     mapController.animateCamera(CameraUpdate.newCameraPosition(cp));
 
     // confirm location
@@ -144,11 +149,27 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
+  as () async {
+    currentFirebaseUser = await FirebaseAuth.instance.currentUser;
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     HelperMethods.getCurrentUserInfo();
+    setupPositionLocator();
+    as();
+    String userid = currentFirebaseUser.uid;
+
+    DatabaseReference userRef = FirebaseDatabase.instance.reference().child('users/$userid');
+    userRef.once().then((DataSnapshot snapshot){
+
+      if(snapshot.value != null){
+        currentUserInfo = Users.fromSnapshot(snapshot);
+      }
+
+    });
   }
 
     String value = langue;
@@ -230,7 +251,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         children: <Widget>[
           GoogleMap(
             padding: EdgeInsets.only(bottom: mapBottomPadding),
-            mapType: MapType.terrain,
+            mapType: MapType.normal,
             myLocationButtonEnabled: true,
             initialCameraPosition: googlePlex,
             myLocationEnabled: true,

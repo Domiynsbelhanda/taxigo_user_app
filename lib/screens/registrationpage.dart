@@ -67,32 +67,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
       builder: (BuildContext context) => ProgressDialog(status: Translations.of(context).text('register_you'),),
     );
 
-    final User user = (await _auth.createUserWithEmailAndPassword(
+    final User userss = (await _auth.createUserWithEmailAndPassword(
       email: emailController.text,
       password: passwordController.text,
-    ).catchError((ex){
+    )).user;
 
-      //check error and display message
-      Navigator.pop(context);
-      PlatformException thisEx = ex;
-      showSnackBar(thisEx.message);
-
-    })).user;
+    showSnackBar('No register');
 
     Navigator.pop(context);
+
     // check if user registration is successful
-    if(user != null){
+    if(userss != null){
 
-      var url = await uploadFile(_image, user.uid);
+      showSnackBar(userss.uid);
 
-      DatabaseReference newUserRef = FirebaseDatabase.instance.reference().child('users/${user.uid}');
+      //var url = await uploadFile(_image, user.uid);
+
+      DatabaseReference newUserRef = FirebaseDatabase.instance.reference().child('users/${userss.uid}');
 
       //Prepare data to be saved on users table
       Map userMap = {
         'fullname': fullNameController.text,
         'email': emailController.text,
         'phone': phoneController.text,
-        'image': url.toString()
+        'image': 'url.toString()'
       };
 
       newUserRef.set(userMap);

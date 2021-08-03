@@ -138,7 +138,7 @@ class HelperMethods{
     };
 
     var response = await http.post(
-      'https://fcm.googleapis.com/fcm/send',
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: headerMap,
       body: jsonEncode(bodyMap)
     );
